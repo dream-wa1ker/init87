@@ -4,6 +4,7 @@
 // desc : a custom c slice type (ingeligent strings)
 
 //---------------------------------- include header files -------------------------------
+#include <inttypes.h>
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <string.h> 
@@ -56,13 +57,23 @@ bool slice_startswith(slice s1, slice s2) {
     return true;
 }
 
-// a custom function slice_from_n, returns first n bytes of slice, returns a slice. 
-slice slice_from_n(slice slc, size_t n) {
+// a custom function slice_from_start, returns first n bytes of slice, returns a slice. 
+slice slice_from_start(slice slc, size_t n) {
     if (slc.len < n) n = slc.len;
     return (slice){.data = slc.data, .len = n};
-
 }
 
+// a custom function slice_from_end, to provide the last n bytes. 
+slice slice_from_end(slice slc, size_t n) {
+    if (slc.len < n) n = slc.len;
+    // data  = t h i s   i s   a   d  a  t  a  .  \0
+    // index = 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+    //         ^ current location  ^ final location
+    // slc.data + slc.len will be at 0 + 14 = 14 location (dot).
+    // -4 will be at 10. 
+    //
+    return (slice) {.data = slc.data + slc.len - n, .len = n};
+}
 
 //--------------------------------------- main program ----------------------------------
 int main(void) {
@@ -89,8 +100,10 @@ int main(void) {
         printf("%s starts with %s\n", "myvariable=something", "myvariable");
     }
 
-    slice slc3 = slice_from_n(slc2, 4);
+    slice slc3 = slice_from_start(slc2, 4);
+    slice slc4 = slice_from_end(slc2, 6);
     puts_slice(slc3);
+    puts_slice(slc4);
 
     return EXIT_SUCCESS;
 
