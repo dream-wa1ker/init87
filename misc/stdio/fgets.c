@@ -32,6 +32,10 @@ int main(void) {
     // one line = 256 bytes.
     char line[256];
 
+    // first match : 
+    int found = 0;
+    // track if id is found : it's first match. 
+
 
     while (fgets(line, sizeof(line), file)) {
         // if it is a newline, then continue. 
@@ -39,13 +43,22 @@ int main(void) {
 
         // scan the line using sscanf for the format. if one match is found, then modifiy the id and print it. 
         // see man 3 sscanf for more details. 
+        // if id is found, then id is 1. 
         if(sscanf(line, "id = %d", &id) == 1) {
-            printf("id : %d\n", id);
-        } else {
-            id = 1;
-            puts("no id found; defaulting...");
-            printf("id : %d\n", id);
+            found = 1;
+            // if it is found, then break the loop. 
+            break;
         }
+    }
+
+    // if anything is found, then print the id. 
+    if (found) {
+        printf("id : %d\n", id);
+    // else print the default. 
+    } else {
+        id = 1;
+        puts("no id found, defaulting...");
+        printf("id : %d\n", id);
     }
 
 
