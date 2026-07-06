@@ -57,6 +57,21 @@ bool slice_startswith(slice s1, slice s2) {
     return true;
 }
 
+bool slice_endswith(slice s1, slice s2) {
+    if (s1.len < s2.len) return false;
+    // s1 = h e l l o   w o r l d  \0 
+    //    = 0 1 2 3 4 5 6 7 8 9 10 11
+    //    = len = 11
+
+    // s2 = w o r l d \0 
+    //    = 0 1 2 3 4 5 
+    //    = len = 5 
+    for (size_t i = 0; i < s2.len; i++) {
+        if (s1.data[s1.len - s2.len + i] != s2.data[i]) return false;
+    }
+    return true;
+}
+
 // a custom function slice_from_start, returns first n bytes of slice, returns a slice. 
 slice slice_from_start(slice slc, size_t n) {
     if (slc.len < n) n = slc.len;
@@ -73,6 +88,16 @@ slice slice_from_end(slice slc, size_t n) {
     // -4 will be at 10. 
     //
     return (slice) {.data = slc.data + slc.len - n, .len = n};
+}
+
+// a custom function slice_from_slice, slices an arbitary middle slice. 
+slice slice_from_slice(slice slc, size_t start, size_t len) {
+    if (slc.len < start + len) {
+        start = 0;
+        len = slc.len;
+    }
+
+    return (slice) {.data = slc.data + start, .len = len};
 }
 
 //--------------------------------------- main program ----------------------------------
@@ -102,9 +127,19 @@ int main(void) {
 
     slice slc3 = slice_from_start(slc2, 4);
     slice slc4 = slice_from_end(slc2, 6);
+
+    slice slc5 = slice_from("start middle last");
+    // note that the slice_from_slice, the size_t start should be provided based on the index of that character. start @ m means index of m, that is 6.
+    slice slc6 = slice_from_slice(slc5, 6, 6);
     puts_slice(slc3);
     puts_slice(slc4);
+    puts_slice(slc6);
 
+
+
+    slice slc7 = slice_from("last");
+
+    printf("does slc5 end with %s? %s\n", slc7.data, slice_endswith(slc5, slc7) ? "true" : "false");
     return EXIT_SUCCESS;
 
 }
