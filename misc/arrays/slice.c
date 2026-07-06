@@ -94,7 +94,7 @@ slice slice_from_end(slice slc, size_t n) {
 // a custom function slice_from_slice, slices an arbitary middle slice. 
 slice slice_from_slice(slice slc, size_t start, size_t len) {
     if (start > slc.len) start = slc.len;
-    if (len > slc.len - start) len = slc.len;
+    if (len > slc.len - start) len = slc.len - start;
 
     return (slice) {.data = slc.data + start, .len = len};
 }
