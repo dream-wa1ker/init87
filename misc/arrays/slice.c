@@ -105,7 +105,7 @@ slice slice_lstrip(slice slc) {
     //       0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 
     //       len = 17
     size_t i = 0;
-    for (; isspace(slc.data[i]) != 0;) {
+    while (i < slc.len && isspace((unsigned char)slc.data[i]) != 0) {
         i++;
     }
     return (slice) {.data = slc.data + i,.len = slc.len - i};
