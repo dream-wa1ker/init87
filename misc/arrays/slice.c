@@ -9,6 +9,7 @@
 #include <stdlib.h> 
 #include <string.h> 
 #include <stdbool.h>
+#include <ctype.h> 
 
 // define the slice type. 
 // use the anony structs. 
@@ -92,13 +93,27 @@ slice slice_from_end(slice slc, size_t n) {
 
 // a custom function slice_from_slice, slices an arbitary middle slice. 
 slice slice_from_slice(slice slc, size_t start, size_t len) {
-    if (slc.len < start + len) {
-        start = 0;
-        len = slc.len;
-    }
+    if (start > slc.len) start = slc.len;
+    if (len > slc.len - start) len = slc.len;
 
     return (slice) {.data = slc.data + start, .len = len};
 }
+
+// a custom function slice_lstrip for striping left white spaces. 
+slice slice_lstrip(slice slc) {
+    // data :            h e l l o     w  o  r  l  d  \0
+    //       0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 
+    //       len = 17
+    size_t i = 0;
+    for (; isspace(slc.data[i]) != 0;) {
+        i++;
+    }
+    return (slice) {.data = slc.data + i,.len = slc.len - i};
+}
+
+
+
+
 
 //--------------------------------------- main program ----------------------------------
 int main(void) {
@@ -140,6 +155,12 @@ int main(void) {
     slice slc7 = slice_from("last");
 
     printf("does slc5 end with %s? %s\n", slc7.data, slice_endswith(slc5, slc7) ? "true" : "false");
+
+    slice slc8 = slice_from("        \t8 spaces + tab are there.");
+    puts_slice(slc8);
+    slice slc9 = slice_lstrip(slc8);
+    puts_slice(slc9);
+
     return EXIT_SUCCESS;
 
 }
