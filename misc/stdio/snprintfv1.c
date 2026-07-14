@@ -16,7 +16,8 @@ int main(void) {
     puts("String Formatting...");
 
     // function signatures of both .
-    // int sprintf(char *restrict buf, const char *restrict fmt, ...)
+    // NOTE: int sprintf(char *restrict buf, const char *restrict fmt, ...);
+
     // that is it takes a buffer for storing the formatted string and a format, followed by the variables to get formated. 
     // this is dangerous. but why?
     // because, what if the buf exhausted and yet, the fmt is long? too long? that it overflows?
@@ -24,7 +25,8 @@ int main(void) {
     // sprintf is store printf. 
     // snprintf is store n bytes printf. (just case to remember)
 
-    // int snprintf(char *restrict buf, size_t size, const char *restrict fmt, ...)
+    // NOTE: int snprintf(char *restrict buf, size_t size, const char *restrict fmt, ...)
+
     // but this one here, writes exactly size bytes to the buffer buf. which is sizeof(buf)
 
     // both the return type are int. 
@@ -46,6 +48,16 @@ int main(void) {
     // apart from that the snprintf itself has extra null terminator.
     // 4 bytes + 1 byte + 3 bytes + 1 null terminator = 9 ytes?
 
+    // NOTE: clarification(doubt 1):
+    // Indeed, the name is a char pointer to a string that is 4 bytes including the null terminator.
+    // Yet, the snprintf ignores all the null terminators (formats till the null terminators, but does not include them).
+    // Hence, the snprintf actually formats only 3 bytes from the name.
+    // Additionally, the snprintf itself adds a null terminator at the end.
+    // As a result : name = 3 bytes (formatted), space = 1 byte, number = 3 bytes, null terminator (by snprintf) = 1 byte;
+    // Total Size of format string = 8 bytes.
+    // Which is exact match for the buf[8].
+
+
     // case 2 : overflow.
     char buf2[8];
     snprintf(buf2, sizeof(buf2), "%s-%d", name, 1234);
@@ -62,7 +74,9 @@ int main(void) {
     // we enter the malloc territory.
     // snprintf(NULL, 0, "string..", ...);
     // will write exactly 0 bytes to NULL, ie, it writes nothing.
-    // but you know what happens when snprintf succeeds right? it returns the number of bytes written if the buffer were of infinte size (not the actual size written.)
+
+    // NOTE: but you know what happens when snprintf succeeds right? it returns the number of bytes written (excluding the null terminator) if the buffer were of infinte size (not the actual size written.)
+
     // essentially we would have to store this value and create a malloc buffer of this returned size.
     // my question is : what if we write not to null but to existing buffer?
     int len = snprintf(buf, 0, "some long string.");
@@ -71,11 +85,13 @@ int main(void) {
     // woa, succeeds. essentially not a problem. can be any buffer or even NULL, but DO NOT WRITE BYTES. write 0 bytes. thats it.
 
     int len2 = snprintf(NULL, 0, "I am %s, this is a string of arbitary length. this is a random number : %d", "cr9", 234);
+
     int bytes = len2 + 1;
+    // that +1 is to include the size of the null terminator too.
+
     // now we shall generate the buffer.
     printf("buf size : %d\n", bytes);
     char *buffer = (char *)malloc(bytes * sizeof(char));
-    // why that +1 ? because I gotta include the null terminator too. note? the snprintf returns bytes excluding the null terminator which it adds at the end.
     snprintf(buffer, bytes, "I am %s, this is a string of arbitary length. this is a random number : %d", "cr9", 234);
     printf("%s : %zu\n", buffer, strlen(buffer));
     // but we shell not forget to free the buffer.
