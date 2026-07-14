@@ -17,7 +17,7 @@ int main(void) {
     // the type of the pointer it returns is the FILE* type pointer. 
     // the FILE is a struct that is defined somewhere in the glibc. 
     // on success, it returns the pointer, and on failure, it returns NULL pointer. 
-    // function signature : fopen(const char *pathname, const char *mode);
+    // NOTE: function signature : fopen(const char *pathname, const char *mode);
 
     // modes : 
     // read, write, append : r, w, a, read write, write read: r+, w+, read write append : a+, and for binary modes (in windows : add b)
