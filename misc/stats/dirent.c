@@ -10,6 +10,8 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <stdbool.h>
+#include <errno.h>
+#include <string.h>
 // we require the dirent.h for struct dirent, opendir, readdir (open and read the directory entries)
 
 // we require the sys/stat.h for the path operations in linux.
@@ -56,7 +58,7 @@ int main(int argc, char *argv[argc + 1]) {
     // then we need to check if the path provided is actualy a directory.
     // check if the path is valid and is a directory.
     if (is_directory(dirpath) == false) return EXIT_FAILURE;
-    printf("[STATUS] Directory Valid! Listing entries...\n");
+    printf("[STATUS] Directory Valid! Listing entries...\n\n");
 
     // we need to open the directory.
     // opendir is a function provided by the dirent.h which has the following function signature.
@@ -92,10 +94,19 @@ int main(int argc, char *argv[argc + 1]) {
     // returns NULL on error or end of dir stream.
     // loop through the entries in the crt dir till it is not null.
 
+    // set errno to 0.
+    errno = 0;
     while ((dentry = readdir(dir)) != NULL) {
-        printf("%s\n", dentry->d_name);
+        // classic demorgan's law. not(a or b) = not(a) and not(b).
+        if (strcmp(dentry->d_name, ".") != 0 && strcmp(dentry->d_name, "..") != 0) printf("%s\n", dentry->d_name);
     }
 
+    // if the errno is not zero, then readdir must have set it (most recent after errno = 0)
+    if (errno != 0) {
+        perror("readdir failed");
+        closedir(dir);
+        return EXIT_FAILURE;
+    }
 
     // close the directory stream.
     closedir(dir);
