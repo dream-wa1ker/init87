@@ -6,10 +6,8 @@
 //---------------------------------- include header files -------------------------------
 #include <stdio.h> 
 #include <stdlib.h> 
-#include <strings.h>
 #include <sys/stat.h>
 #include <stdbool.h>
-#include <dirent.h>
 
 // define a function to check if it is a file and path exists.
 bool is_file_exists(const char *pathname) {
@@ -64,7 +62,7 @@ int main(int argc, char *argv[argc + 1]) {
         // printf("[SUCCESS] : the filepath provided is vaild and is a regular file.\n");
         // puts("");
     } else {
-        printf("[ERROR] : the filepath provided is not a valid regular file.\n");
+        printf("[ERROR] : the filepath provided is not a valid or not a regular file.\n");
         return EXIT_FAILURE;
     }
 
